@@ -1,0 +1,107 @@
+import { useMemo, type ReactElement } from "react";
+import type { Cart } from "../../App";
+import type { Guitar as GuitarT } from "../../data/guitars";
+
+interface HeaderProps {
+  cart: Cart,
+  addToCart: (item: GuitarT) => void,
+  substractFromCart: (item: GuitarT) => void,
+  removeFromCart: (item: GuitarT) => void,
+  clearCart: () => void
+}
+
+const Header = ( { cart, addToCart, substractFromCart, removeFromCart,clearCart } : HeaderProps) : ReactElement => {
+
+  const { items, total} = cart;
+
+  const isEmpty = useMemo( () => items.length === 0, [items.length]);
+
+  return (
+    <header className="py-5 header">
+      <div className="container-xl">
+        <div className="row justify-content-center justify-content-md-between">
+          <div className="col-8 col-md-3">
+            <a href="index.html">
+              <img
+                className="img-fluid"
+                src="/img/logo.svg"
+                alt="imagen logo"
+              />
+            </a>
+          </div>
+          <nav className="col-md-6 a mt-5 d-flex align-items-start justify-content-end">
+            <div className="carrito">
+              <img
+                className="img-fluid"
+                src="/img/carrito.png"
+                alt="imagen carrito"
+              />
+
+              <div id="carrito" className="bg-white p-3">
+                { isEmpty ? (<p className="text-center">El carrito esta vacio</p>)
+                : (
+                    <table className="w-100 table">
+                      <thead>
+                        <tr>
+                          <th>Imagen</th>
+                          <th>Nombre</th>
+                          <th>Precio</th>
+                          <th>Cantidad</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((item) => {
+                          return (
+                            <tr key={item.item.id}>
+                              <td>
+                                <img
+                                  className="img-fluid"
+                                  src={`"../..//img/${item.item.image}.jpg`}
+                                  alt="imagen guitarra"
+                                />
+                              </td>
+                              <td>{item.item.name}</td>
+                              <td className="fw-bold">
+                                ${item.item.price * item.quantity}
+                              </td>
+                              <td className="flex align-items-start gap-4">
+                                <button
+                                  type="button"
+                                  onClick={() => substractFromCart(item.item)}
+                                  className="btn btn-dark">-</button>
+                                {item.quantity}
+                                <button
+                                  type="button"
+                                  onClick={() => addToCart(item.item)}
+                                  className="btn btn-dark">+</button>
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFromCart(item.item)}
+                                  className="btn btn-danger">X</button>
+                              </td>
+                            </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+
+                <p className="text-end">
+                  Total pagar: <span className="fw-bold">${total}</span>
+                </p>
+                <button type="button" onClick={clearCart} className="btn btn-dark w-100 mt-3 p-2">
+                  Vaciar Carrito
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
